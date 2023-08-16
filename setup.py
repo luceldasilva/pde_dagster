@@ -11,6 +11,7 @@ setup(
         "matplotlib",
         "textblob",
         "tweepy",
+        "python-decouple",
         "wordcloud",
     ],
     extras_require={"dev": ["dagster-webserver", "pytest"]},
