@@ -63,11 +63,14 @@ def download_file(file_id):
         done = False
         while done is False:
             status, done = downloader.next_chunk()
-            print(f'Archivo cargado en {round(time() - start_time, 2)} segundos')
+            logger.info(
+                f'Archivo cargado en {round(time() - start_time, 2)} segundos'
+                )
     
     except HttpError as error:
-        print(f'''
-        An error occurred while downloading file from Google Drive: {error}'''
+        logger.error(
+            f'Ocurrió un error al descargar el archivo'
+            f' desde Google Drive: {error}'
         )
         return
     
@@ -121,7 +124,7 @@ def pack_to_df(files=None, dfs_in=None):
 
 def parallel_pack():
     files = list_files()
-    print(f'Hay {len(files)} archivos')
+    logger.info(f'Hay {len(files)} archivos')
 
     file_chunks = np.array_split(files, 25)
 
@@ -137,7 +140,10 @@ def parallel_pack():
     for t in threads:
         t.join()
 
-    print(f'Se cargaron los dataframes en paralelo {round(time() - start_time, 2)} segundos')
+    logger.info(
+    f'Se cargaron los dataframes en paralelo'
+    f'{round(time() - start_time, 2)} segundos'
+    )
 
     market_df = pd.concat(dfs)
     return market_df
