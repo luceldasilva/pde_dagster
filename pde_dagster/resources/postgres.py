@@ -1,4 +1,3 @@
-from pde_dagster.register.logger import logger
 from decouple import config
 from dagster import resource
 from contextlib import contextmanager
@@ -12,7 +11,6 @@ def postgres_resource(context):
 
     assert pg_connection_string is not None, "PG_CONN environment variable not set"
 
-    logger.info('Cargando')
     engine = create_engine(pg_connection_string)
     connection = engine.connect()
 
