@@ -1,4 +1,5 @@
 *.json
+probando.py
 
 notebooks/*
 !notebooks/0_generate_data.ipynb
