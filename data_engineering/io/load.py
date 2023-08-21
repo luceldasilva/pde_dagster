@@ -1,4 +1,3 @@
-from pde_dagster.register.logger import logger
 from decouple import config
 import pandas as pd
 from sqlalchemy.dialects.postgresql import insert, JSONB
@@ -17,11 +16,9 @@ def postgres_upsert(table, conn, keys, data_iter):
 
 
 def load_dataframe(df, pg_conn=None, table_name="transactions", context=None):
-    if pg_conn is not None:
-        logger.debug('PG_CONN no estaba configurada')
-        pg_conn=None
-
-    pg_conn = config("PG_CONN")
+    if pg_conn is None:
+        assert config("PG_CONN") is not None, "PG_CONN environment variable is not set."
+        pg_conn = os.getenv("PG_CONN")
 
     df.to_sql(
         name=table_name,
@@ -36,4 +33,4 @@ def load_dataframe(df, pg_conn=None, table_name="transactions", context=None):
     if context is None:
         print(msg)
     else:
-        logger.info(msg)
+        context.log.info(msg)

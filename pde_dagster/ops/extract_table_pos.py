@@ -1,5 +1,4 @@
 from data_engineering.io.extract import extract_table
-from pde_dagster.register.logger import logger
 from dagster import op
 
 

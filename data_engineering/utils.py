@@ -9,10 +9,10 @@ def hash_id(id_str):
 
 def get_lookup_fn(df, from_col, to_col):
     
-    """para configurar luego
-        assert from_col in df.columns, "`from_col` is not a valid column name in the passed DataFrame."
+    
+    assert from_col in df.columns, "`from_col` is not a valid column name in the passed DataFrame."
     assert to_col in df.columns, "`to_col` is not a valid column name in the passed DataFrame."
-    """
+
     lookup_dict = pd.Series(df[to_col].values, index=df[from_col]).to_dict()
     return lambda from_val: lookup_dict[from_val]
 

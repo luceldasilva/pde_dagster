@@ -6,7 +6,7 @@ import pandas as pd
 import sys
 import logging
 from glob import glob
-from pde_dagster.register.logger import logger
+from decouple import config
 from os import path
 from time import time
 from threading import Thread
@@ -29,6 +29,16 @@ def drive_create_client():
             .Credentials
             .from_service_account_file(creds_path)
         )
+    else:
+        drive_creds = config("DRIVE_CREDS")
+        assert drive_creds is not None, "DRIVE_CREDS environment variable not set"
+        credentials = (
+            service_account
+            .Credentials
+            .from_service_account_info(
+                json.loads(drive_creds)
+            )
+        )
 
     scoped_credentials = credentials.with_scopes(scopes)
 
@@ -46,7 +56,7 @@ def list_files():
     ]
 
     if len(files) == 0:
-        logger.info('''No se encontraron archivos.
+        print('''No se encontraron archivos.
             ¿Tu cuenta de servicio tiene acceso a tu Drive''')
         
     return files
@@ -63,12 +73,10 @@ def download_file(file_id):
         done = False
         while done is False:
             status, done = downloader.next_chunk()
-            logger.info(
-                f'Archivo cargado en {round(time() - start_time, 2)} segundos'
-                )
+
     
     except HttpError as error:
-        logger.error(
+        print(
             f'Ocurrió un error al descargar el archivo'
             f' desde Google Drive: {error}'
         )
@@ -77,7 +85,15 @@ def download_file(file_id):
     return f.getvalue()
 
 
-def load_file_to_df(f):
+def load_file_to_df(f, verbose=False, context=None):
+    
+    if verbose:
+        msg = f"Starting to download {f['name']}"
+        if context is not None:
+            context.log.info(msg)
+        else:
+            print(msg)
+    
     filename, ext = f['name'].split('.')
 
     assert filename.count('__') == 2, "Archivo le falta tiene muchos '__'s xP"
@@ -94,7 +110,7 @@ def load_file_to_df(f):
     return file_df
 
 
-def pack_to_df(files=None, dfs_in=None):
+def pack_to_df(files=None, dfs_in=None, verbose=False, context=None):
     if dfs_in is not None:
         dfs = dfs_in
     else:
@@ -107,10 +123,15 @@ def pack_to_df(files=None, dfs_in=None):
 
     for f in files:
         try:
-            file_df = load_file_to_df(f)
+            file_df = load_file_to_df(f, verbose=verbose, context=context)
             dfs.append(file_df)
-        except AssertionError:
-            logger.error(f'{f["name"]} no tiene el formato esperado')
+        except ValueError:
+            if verbose:
+                msg = f"File name '{f['name']}' is not following the expected format."
+                if context is not None:
+                    context.log.info(msg)
+                else:
+                    print(msg)
             malformed_filenames.append(f["name"])
             continue
     
@@ -124,7 +145,11 @@ def pack_to_df(files=None, dfs_in=None):
 
 def parallel_pack():
     files = list_files()
-    logger.info(f'Hay {len(files)} archivos')
+    msg = f"Found {len(files)} files"
+    if context is None:
+        print(msg)
+    else:
+        context.log.info(msg)
 
     file_chunks = np.array_split(files, 25)
 
@@ -140,10 +165,14 @@ def parallel_pack():
     for t in threads:
         t.join()
 
-    logger.info(
-    f'Se cargaron los dataframes en paralelo'
-    f'{round(time() - start_time, 2)} segundos'
+    msg = (
+        f"Loading dataframes from Drive in parallel"
+        f" took {round(time() - start_time, 2)} seconds"
     )
+    if context is None:
+        print(msg)
+    else:
+        context.log.info(msg)
 
     market_df = pd.concat(dfs)
     return market_df

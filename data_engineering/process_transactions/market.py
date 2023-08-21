@@ -5,7 +5,6 @@ from statistics import mean
 from datetime import datetime
 from geopy.geocoders import Nominatim
 from difflib import get_close_matches
-from pde_dagster.register.logger import logger
 from data_engineering.io.extract import extract_table
 from data_engineering.io.load import load_dataframe
 from data_engineering.io.drive import parallel_load_files_to_df
@@ -107,7 +106,7 @@ def transform_market_transactions(df, verbose=False, context=None):
     if context is None:
         print(msg)
     else:
-        logger.debug(msg)
+        context.log.info(msg)
 
     # Gather prerequisites of the operations
     products_df = extract_table("products")
@@ -155,11 +154,11 @@ def transform_market_transactions(df, verbose=False, context=None):
         weather_key = date + ":" + location
         if weather_key in weather_data:
             if verbose:
-                logger.info(f"Using cached weather data for {date}")
+                print(f"Using cached weather data for {date}")
             temp, weather_type = weather_data[weather_key]
         else:
             if verbose:
-                logger.info(f"Getting weather data for {date}")
+                print(f"Getting weather data for {date}")
             temp, weather_type = get_weather(location, date)
             weather_data[weather_key] = [temp, weather_type]
 
@@ -203,7 +202,7 @@ def transform_market_transactions(df, verbose=False, context=None):
     if context is None:
         print(msg)
     else:
-        logger.info(msg)
+        context.log.info(msg)
 
     return transactions_df, errors
 

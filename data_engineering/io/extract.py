@@ -1,15 +1,12 @@
-from pde_dagster.register.logger import logger
 from decouple import config
 import pandas as pd
 
 
 def extract_table(table_name, pg_conn=None, start_time=None, end_time=None):
 
-    if pg_conn is not None:
-        logger.debug('PG_CONN no estaba configurada')
-        pg_conn=None
-
-    pg_conn = config("PG_CONN")
+    if pg_conn is None:
+        assert config("PG_CONN") is not None, "PG_CONN environment variable is not set."
+        pg_conn = config("PG_CONN")
 
     query = f"SELECT * FROM {table_name}"
 
