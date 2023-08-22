@@ -15,7 +15,7 @@ def transform_crypto_transactions(df, products_df=None):
     eth_price_df = get_eth_price()
     
     transactions = []
-    for i, row in crypto_df.iterrows():
+    for i, row in df.iterrows():
         # Transfer values that we want to keep unchanged
         transaction = row[
             [
@@ -44,7 +44,7 @@ def transform_crypto_transactions(df, products_df=None):
 
         transactions.append(transaction)
 
-    return transactions_df = pd.DataFrame(transactions)
+    return pd.DataFrame(transactions)
 
 
 def process_crypto_transactions():

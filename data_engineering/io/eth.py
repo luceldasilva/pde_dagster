@@ -9,15 +9,15 @@ yf.pdr_override()
 
 def get_eth_price():
     date_range = pd.read_sql(
-        sql='SELECT min(created_at), max(created_at) FROM crypto_transactions'
+        sql='SELECT min(created_at), max(created_at) FROM crypto_transactions',
         con=config('PG_CONN')
     )
     
     eth_price_df = (
         web.get_data_yahoo(
             'ETH-USD',
-            eth_range_df.iloc[0]['min'],
-            eth_range_df.iloc[0]['max']
+            date_range.iloc[0]['min'],
+            date_range.iloc[0]['max']
         )
     )
     
