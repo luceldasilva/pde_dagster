@@ -7,7 +7,7 @@ from geopy.geocoders import Nominatim
 from difflib import get_close_matches
 from data_engineering.io.extract import extract_table
 from data_engineering.io.load import load_dataframe
-from data_engineering.io.drive import parallel_load_files_to_df
+from data_engineering.io.drive import parallel_pack
 from data_engineering.utils import get_lookup_fn, hash_id, parse_date_formats
 from data_engineering.constants import LOCATIONS, EMPLOYEES, TAX_RATE, PRODUCTS
 
@@ -42,7 +42,7 @@ def get_weather(address, date):
     
     url = (
         f"https://archive-api.open-meteo.com/v1/era5?"
-        f"latitude={location.latitude}&longitude={location.longitude}&"
+        f"latitude={latitude}&longitude={longitude}&"
         f"start_date={date}&end_date={date}&"
         f"timezone=GMT&daily=temperature_2m_max,rain_sum,"
         f"snowfall_sum,precipitation_hours&hourly=cloudcover"
@@ -208,7 +208,7 @@ def transform_market_transactions(df, verbose=False, context=None):
 
 
 def process_market_transactions(verbose=False):
-    df = parallel_load_files_to_df(verbose=verbose)
+    df = parallel_pack(verbose=verbose)
     df, errors = transform_market_transactions(df, verbose=verbose)
     load_dataframe(df)
 

@@ -143,7 +143,7 @@ def pack_to_df(files=None, dfs_in=None, verbose=False, context=None):
     return concat_df, malformed_filenames
 
 
-def parallel_pack():
+def parallel_pack(thread_count=25, verbose=False, context=None):
     files = list_files()
     msg = f"Found {len(files)} files"
     if context is None:
@@ -151,14 +151,14 @@ def parallel_pack():
     else:
         context.log.info(msg)
 
-    file_chunks = np.array_split(files, 25)
+    file_chunks = np.array_split(files, thread_count)
 
     start_time = time()
     dfs = []
     threads = []
 
     for chunk in file_chunks:
-        t = Thread(target=pack_to_df, args=(chunk, dfs))
+        t = Thread(target=pack_to_df, args=(chunk, dfs, verbose, context))
         t.start()
         threads.append(t)
 
@@ -173,6 +173,9 @@ def parallel_pack():
         print(msg)
     else:
         context.log.info(msg)
+    
+    if len(dfs) == 0:
+        return pd.DataFrame()
 
     market_df = pd.concat(dfs)
     return market_df
