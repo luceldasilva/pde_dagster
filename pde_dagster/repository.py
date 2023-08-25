@@ -12,6 +12,9 @@ from pde_dagster.jobs.J4_streamed_process_records import (
 from pde_dagster.jobs.J5_process_files import (
     J5_process_files
 )
+from pde_dagster.schedules.process_records_schedule import (
+    process_records_schedule
+)
 
 
 @repository
@@ -23,7 +26,7 @@ def pde_dagster():
         J4_streamed_process_records,
         J5_process_files
     ]
-    schedules = []
+    schedules = [process_records_schedule]
     sensors = []
 
     return jobs + schedules + sensors
