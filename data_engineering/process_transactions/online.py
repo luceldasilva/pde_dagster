@@ -22,14 +22,16 @@ def transform_online_transactions(df, products_df=None):
         products_df = extract_table("products")
 
     name_to_sku = get_lookup_fn(products_df, from_col="name", to_col="sku")
-    name_to_price = (
-        get_lookup_fn(products_df, from_col="name", to_col="unit_price")
+    name_to_price = get_lookup_fn(
+        products_df,
+        from_col="name",
+        to_col="unit_price"
     )
     
     transactions = []
 
     for i, row in df.iterrows():
-        data = row["stripe_data"]
+        data = json.loads(row["stripe_data"])
         
         if pd.isna(data):
             continue

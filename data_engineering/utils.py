@@ -8,8 +8,6 @@ def hash_id(id_str):
 
 
 def get_lookup_fn(df, from_col, to_col):
-    
-    
     assert from_col in df.columns, "`from_col` is not a valid column name in the passed DataFrame."
     assert to_col in df.columns, "`to_col` is not a valid column name in the passed DataFrame."
 
