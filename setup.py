@@ -22,6 +22,7 @@ setup(
         "geopy",
         "openpyxl",
         "yfinance",
+        "pandas_datareader",
     ],
     extras_require={"dev": ["dagster-webserver", "pytest"]},
 )
