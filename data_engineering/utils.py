@@ -4,7 +4,7 @@ from datetime import datetime
 
 
 def hash_id(id_str):
-    return hashlib.shake_256(str(id_str).encode("utf-8")).hexdigest(length=16)
+    return hashlib.shake_256(str(id_str).encode("utf-8")).hexdigest(16)
 
 
 def get_lookup_fn(df, from_col, to_col):
