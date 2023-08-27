@@ -15,6 +15,7 @@ from pde_dagster.jobs.J5_process_files import (
 from pde_dagster.schedules.process_records_schedule import (
     process_records_schedule
 )
+from pde_dagster.sensors.pos_transaction_sensor import pos_transaction_sensor
 
 
 @repository
@@ -27,6 +28,6 @@ def pde_dagster():
         J5_process_files
     ]
     schedules = [process_records_schedule]
-    sensors = []
+    sensors = [pos_transaction_sensor]
 
     return jobs + schedules + sensors
