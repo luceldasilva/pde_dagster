@@ -39,6 +39,7 @@ jobs:
         with:
           ref: ${{ github.head_ref }}
           path: project-repo
+          submodules: recursive
           
       - name: Python Executable Deploy
         if: steps.prerun.outputs.result == 'pex-deploy'
@@ -64,6 +65,7 @@ jobs:
         uses: actions/checkout@v3
         with:
           ref: ${{ github.head_ref }}
+          submodules: recursive
       - name: Build and deploy to Dagster Cloud serverless
         uses: dagster-io/dagster-cloud-action/actions/serverless_branch_deploy@v0.1
         with:
